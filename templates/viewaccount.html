@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+
+{% block title %}View Account Details{% endblock %}
+
+{% block content %}
+<div class="row col-md-8 my-5">
+    <div class="card col-md-8 mx-auto px-0">
+        <div class="card-header text-center">
+            <h4>View Account Details</h4>
+        </div>
+        <div class="card-body">
+            {% if data %}
+                <div class="row mb-4">
+                    {% for account in data %}
+                        <div class="card col-md-12 mb-3 border shadow-sm">
+                            <div class="card-body">
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>Account Number:</strong></td>
+                                            <td>{{ account.AccountNumber }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Balance:</strong></td>
+                                            <td>${{ account.Balance }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Last Accessed Date:</strong></td>
+                                            <td>{{ account.LastaccessedDate }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Account Type:</strong></td>
+                                            <td>{{ account.AccountType }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Customer SSN:</strong></td>
+                                            <td>{{ account.CustomerSSN }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="d-flex justify-content-end">
+                                    {% if session['usert'] == "banker" %}
+                                        <a href="{{ url_for('delaccount', acc_id=account.AccountNumber) }}" class="mx-1">
+                                            <button class="btn btn-danger">Delete</button>
+                                        </a>
+                                        <a href="{{ url_for('deposit', acc_id=account.AccountNumber) }}" class="mx-1">
+                                            <button class="btn btn-primary">Deposit</button>
+                                        </a>
+                                        <a href="{{ url_for('withdraw', acc_id=account.AccountNumber) }}" class="mx-1">
+                                            <button class="btn btn-warning">Withdraw</button>
+                                        </a>
+                                    {% elif session['usert'] == "customer" %}
+                                        {% if data|length > 1 %}
+                                            <a href="{{ url_for('transfer', cust_id=account.CustomerSSN) }}" class="mx-1">
+                                                <button class="btn btn-info">Transfer</button>
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <form action="{{ url_for('viewaccount') }}" method="POST">
+                    <div class="form-group input-group mb-3">
+                        <label class="m-auto pr-3" for="cust_id">Customer ID</label>
+                        <input class="form-control" name="cust_id" id="cust_id" type="text" placeholder="Enter Customer ID" minlength="3" maxlength="9" required>
+                    </div>
+                    <div class="form-group input-group mb-3">
+                        <label class="m-auto pr-3">Or</label>
+                    </div>
+                    <div class="form-group input-group mb-3">
+                        <label class="m-auto pr-3" for="acc_id">Account ID</label>
+                        <input class="form-control" name="acc_id" id="acc_id" type="text" placeholder="Enter Account ID" minlength="3" maxlength="9">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">View</button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
